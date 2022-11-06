@@ -18,6 +18,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Logger;
+
 @Getter
 @Setter
 public class CustomDataSource implements DataSource {
@@ -102,9 +103,7 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
-
     }
-
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
 
