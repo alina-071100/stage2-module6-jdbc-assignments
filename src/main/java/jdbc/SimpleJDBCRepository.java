@@ -51,7 +51,7 @@ public class SimpleJDBCRepository {
 
 
     public User findUserById(Long userId) {
-        User user = null;
+        User user = new User();
         try {
             ps = connection.prepareStatement(findUserByIdSQL);
             ps.setLong(1, userId);
@@ -70,7 +70,7 @@ public class SimpleJDBCRepository {
     }
 
     public User findUserByName(String userName) {
-        User user = null;
+        User user = new User();
         try {
             ps = connection.prepareStatement(findUserByNameSQL);
             ps.setString(1, userName);
