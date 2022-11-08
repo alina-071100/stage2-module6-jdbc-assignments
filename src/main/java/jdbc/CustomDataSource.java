@@ -4,11 +4,8 @@ import javax.sql.DataSource;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Value;
-
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -51,14 +48,14 @@ public class CustomDataSource implements DataSource {
                     appProps.getProperty("postgres.password"),
                     appProps.getProperty("postgres.name")
             );
-        } catch (IOException e) {
+        } catch (IOException e){
             e.printStackTrace();
         }
 
         return instance;
     }
 
-    private Connection getConnectionCommon(String url, String name, String password) {
+    private Connection getConnectionCommon(String url, String name, String password){
         String _url = url == null ? this.url : url;
         String _user = name == null ? this.name : name;
         String _password = password == null ? this.password : password;
@@ -70,7 +67,7 @@ public class CustomDataSource implements DataSource {
                     .getConnection(_url, _user, _password);
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
             System.exit(0);
         }
 
@@ -84,7 +81,7 @@ public class CustomDataSource implements DataSource {
     }
 
     @Override
-    public Connection getConnection(String username, String password) {
+    public Connection getConnection(String username, String password){
         return getConnectionCommon(null, username, password);
     }
 
@@ -103,6 +100,7 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
+
     }
 
     @Override

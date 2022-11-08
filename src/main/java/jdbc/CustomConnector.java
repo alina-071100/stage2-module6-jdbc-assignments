@@ -1,6 +1,7 @@
 package jdbc;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 
 public class CustomConnector {
     public Connection getConnection(String url) {
