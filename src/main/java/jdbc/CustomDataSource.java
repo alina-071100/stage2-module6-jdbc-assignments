@@ -33,10 +33,9 @@ public class CustomDataSource implements DataSource {
     }
 
     public static CustomDataSource getInstance() {
-        if (instance != null) {
-            return instance;
-        }
-else try {
+        if (instance != null) return instance;
+
+        try {
             String rootPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath();
             String appConfigPath = rootPath + "app.properties";
 
@@ -103,7 +102,6 @@ else try {
     public void setLogWriter(PrintWriter out) throws SQLException {
 
     }
-
 
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
