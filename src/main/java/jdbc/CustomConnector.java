@@ -1,6 +1,7 @@
 package jdbc;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 
 
 public class CustomConnector {
@@ -8,6 +9,8 @@ public class CustomConnector {
         Connection connection = null;
 
         try {
+            Class.forName("org.postgresql.Driver");
+            Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/myfirstdb", "postgres", "postgres");
             CustomDataSource customDataSource = CustomDataSource.getInstance();
             connection = customDataSource.getConnection(url);
         }catch (Exception e){
