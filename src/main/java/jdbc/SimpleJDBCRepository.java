@@ -32,6 +32,8 @@ public class SimpleJDBCRepository {
     private static final String findUserByNameSQL = "select * from myusers where firstname = ?";
     private static final String findAllUserSQL = "select * from myusers";
 
+    private static final String FIRSTNAME = "firstName";  // Compliant
+
     public Long createUser(User user){
         Long id = null;
 
@@ -58,7 +60,7 @@ public class SimpleJDBCRepository {
 
             user = new User(
                     resultSet.getLong("id"),
-                    resultSet.getString("firstName"),
+                    resultSet.getString(FIRSTNAME),
                     resultSet.getString("lastName"),
                     resultSet.getInt("age"));
         }catch (SQLException e){
@@ -77,7 +79,7 @@ public class SimpleJDBCRepository {
 
             user = new User(
                     resultSet.getLong("id"),
-                    resultSet.getString("firstName"),
+                    resultSet.getString(FIRSTNAME),
                     resultSet.getString("lastName"),
                     resultSet.getInt("age")
             );
@@ -98,7 +100,7 @@ public class SimpleJDBCRepository {
             while (resultSet.next()){
                 users.add(new User(
                         resultSet.getLong("id"),
-                        resultSet.getString("firstName"),
+                        resultSet.getString(FIRSTNAME),
                         resultSet.getString("lastName"),
                         resultSet.getInt("age")
                 ));
