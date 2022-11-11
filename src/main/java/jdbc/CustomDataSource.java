@@ -2,21 +2,24 @@ package jdbc;
 
 import javax.sql.DataSource;
 
-import javax.sql.DataSource;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-
+@Getter
+@Setter
 public class CustomDataSource implements DataSource {
-
     private static volatile CustomDataSource instance;
-    private static final SQLException SQL_EXCEPTION = new SQLException();
-    private static final Object MONITOR = new Object();
     private final String driver;
     private final String url;
     private final String name;
@@ -25,90 +28,103 @@ public class CustomDataSource implements DataSource {
     private CustomDataSource(String driver, String url, String password, String name) {
         this.driver = driver;
         this.url = url;
-        this.password = password;
         this.name = name;
-        instance = this;
+        this.password = password;
     }
 
     public static CustomDataSource getInstance() {
+        if (instance != null) return instance;
 
-        if (instance == null) {
+        try {
+            String rootPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath();
+            String appConfigPath = rootPath + "app.properties";
 
-            synchronized (MONITOR) {
+            Properties appProps = new Properties();
+            appProps.load(new FileInputStream(appConfigPath));
 
-                if (instance == null) {
-
-                    try {
-
-                        Properties properties = new Properties();
-                        properties.load(
-                                CustomDataSource.class.getClassLoader().getResourceAsStream("app.properties")
-                        );
-
-                        instance = new CustomDataSource(
-                                properties.getProperty("postgres.driver"),
-                                properties.getProperty("postgres.url"),
-                                properties.getProperty("postgres.password"),
-                                properties.getProperty("postgres.name")
-                        );
-
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                }
-
-            }
-
+            instance = new CustomDataSource(
+                    appProps.getProperty("postgres.driver"),
+                    appProps.getProperty("postgres.url"),
+                    appProps.getProperty("postgres.password"),
+                    appProps.getProperty("postgres.name")
+            );
+        } catch (IOException e){
+            e.printStackTrace();
         }
 
         return instance;
-
     }
+
+    private Connection getConnectionCommon(String url, String name, String password){
+        String _url = url == null ? this.url : url;
+        String _user = name == null ? this.name : name;
+        String _password = password == null ? this.password : password;
+
+        Connection c = null;
+        try {
+            Class.forName(driver);
+            c = DriverManager
+                    .getConnection(_url, _user, _password);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            System.exit(0);
+        }
+
+        return c;
+    }
+
 
     @Override
     public Connection getConnection() {
-        return new CustomConnector().getConnection(url, name, password);
+        return getConnectionCommon(null, null, null);
     }
 
     @Override
-    public Connection getConnection(String username, String password) {
-        return new CustomConnector().getConnection(url, username, password);
+    public Connection getConnection(String username, String password){
+        return getConnectionCommon(null, username, password);
+    }
+
+    public Connection getConnection(String url) {
+        return getConnectionCommon(url, null, null);
+    }
+
+    public Connection getConnection(String url, String username, String password) {
+        return getConnectionCommon(url, username, password);
     }
 
     @Override
     public PrintWriter getLogWriter() throws SQLException {
-        throw SQL_EXCEPTION;
+        return null;
     }
 
     @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
-        throw SQL_EXCEPTION;
+
     }
 
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
-        throw SQL_EXCEPTION;
+
     }
 
     @Override
     public int getLoginTimeout() throws SQLException {
-        throw SQL_EXCEPTION;
+        return 0;
     }
 
     @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        throw new SQLFeatureNotSupportedException();
+        return null;
     }
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        throw SQL_EXCEPTION;
+        return null;
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        throw SQL_EXCEPTION;
+        return false;
     }
-
 }
